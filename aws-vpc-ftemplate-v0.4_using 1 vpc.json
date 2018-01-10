@@ -1,0 +1,513 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+
+  "Description" : "create VPC ",
+    "Metadata" : {
+    	"Created by" : "harleen.mann@parkwaypantai.com",
+    	"Last modified by" : "harleen.mann@parkwaypantai.com",
+		"Last modified date" : "15-8-17",
+		"Current Version" : "0.4",	
+		"v0.4 - Comment" : "",
+		"v0.3 - Comment" : "added public VPC, added subnets for all VPCs, input az name",
+		"v0.2 - Comment" : "added user i/p for vpc cidr block. added 3 VPCs",
+		"v0.1 - Comment" : "create VPC with an exactly 3 letter name"
+        },    
+
+  "Parameters" : {
+	  	"orgname" : {
+	      "Description" : "Abbreviation for your organization",
+	      "Type" : "String",
+	      "Default" : "XXX",
+	      "AllowedPattern": "(\\D{3})",
+	      "ConstraintDescription" : "Must be a 3 letter word e.g. MOD for Malaysia Operating Division"
+	    },
+	    
+	    "az1" : {
+	    	"Description" : "AvailabilityZone 1 name",
+	    	"Type" : "String",
+	    	"Default" : "ap-xxx-1a",	    	
+	    	"ConstraintDescription" : "Must be a valid AZ"
+	    },
+	    "az2" : {
+	    	"Description" : "AvailabilityZone 2 name",
+	    	"Type" : "String",
+	    	"Default" : "ap-xxx-1b",	    	
+	    	"ConstraintDescription" : "Must be a valid AZ"
+	    },	    
+
+	    "vpcmgmtcidr" : {
+	    	"Description" : "CIDR block for the MGMT VPC",
+	    	"Type" : "String",
+	    	"AllowedPattern" : "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+	    	"ConstraintDescription" : "Must be a valid CIDR block"
+	    },
+	    "vpcmgmtsubnet1az1cidr" : {
+	    	"Description" : "CIDR block for the MGMT VPC Subnet-1 in AZ1",
+	    	"Type" : "String",
+	    	"AllowedPattern" : "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+	    	"ConstraintDescription" : "Must be a valid CIDR block"
+	    },
+	    "vpcmgmtsubnet1az2cidr" : {
+	    	"Description" : "CIDR block for the MGMT VPC Subnet-1 in AZ2",
+	    	"Type" : "String",
+	    	"AllowedPattern" : "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+	    	"ConstraintDescription" : "Must be a valid CIDR block"
+	    },
+	    "vpcmgmtsubnet2az1cidr" : {
+	    	"Description" : "CIDR block for the MGMT VPC Subnet-2 in AZ1",
+	    	"Type" : "String",
+	    	"AllowedPattern" : "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+	    	"ConstraintDescription" : "Must be a valid CIDR block"
+	    },
+	    "vpcmgmtsubnet2az2cidr" : {
+	    	"Description" : "CIDR block for the MGMT VPC Subnet-2 in AZ2",
+	    	"Type" : "String",
+	    	"AllowedPattern" : "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+	    	"ConstraintDescription" : "Must be a valid CIDR block"
+	    },
+	    "vpcmgmtsubnet3az1cidr" : {
+	    	"Description" : "CIDR block for the MGMT VPC Subnet-3 in AZ1",
+	    	"Type" : "String",
+	    	"AllowedPattern" : "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+	    	"ConstraintDescription" : "Must be a valid CIDR block"
+	    },
+	    "vpcmgmtsubnet3az2cidr" : {
+	    	"Description" : "CIDR block for the MGMT VPC Subnet-3 in AZ2",
+	    	"Type" : "String",
+	    	"AllowedPattern" : "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+	    	"ConstraintDescription" : "Must be a valid CIDR block"
+	    },
+	    "vpcmgmtsubnet4az1cidr" : {
+	    	"Description" : "CIDR block for the MGMT VPC Subnet-4 in AZ1",
+	    	"Type" : "String",
+	    	"AllowedPattern" : "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+	    	"ConstraintDescription" : "Must be a valid CIDR block"
+	    },
+	    "vpcmgmtsubnet4az2cidr" : {
+	    	"Description" : "CIDR block for the MGMT VPC Subnet-4 in AZ2",
+	    	"Type" : "String",
+	    	"AllowedPattern" : "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+	    	"ConstraintDescription" : "Must be a valid CIDR block"
+	    },
+	    "vpcmgmtsubnet5az1cidr" : {
+	    	"Description" : "CIDR block for the MGMT VPC Subnet-5 in AZ1",
+	    	"Type" : "String",
+	    	"AllowedPattern" : "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+	    	"ConstraintDescription" : "Must be a valid CIDR block"
+	    },
+	    "vpcmgmtsubnet5az2cidr" : {
+	    	"Description" : "CIDR block for the MGMT VPC Subnet-5 in AZ2",
+	    	"Type" : "String",
+	    	"AllowedPattern" : "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+	    	"ConstraintDescription" : "Must be a valid CIDR block"
+	    }
+
+    },
+
+	"Resources" : {
+	    "VPCMGMT" : {
+	      "Type" : "AWS::EC2::VPC",
+	      "Properties" : {
+	        "CidrBlock" : { "Ref" : "vpcmgmtcidr"},
+	        "Tags" : [  {"Key" : "Name", "Value" : { "Fn::Join" : ["", [{"Ref" : "orgname"}, "MGMT"]]	}},
+	        			{"Key" : "Help", "Value" : "Kindly contact local admin"},
+	        			{"Key" : "Org", "Value" : { "Ref" : "orgname"}},
+	        			{"Key" : "VPC type", "Value" : "mgmt"} 
+	        		]
+	    	}
+		},
+		"VPCMGMTSUBNET1AZ1"	: {
+		  "Type" : "AWS::EC2::Subnet",
+		  "Properties" : {
+		    "AvailabilityZone" : { "Ref" : "az1"},
+		    "CidrBlock" : { "Ref" : "vpcmgmtsubnet1az1cidr"},
+		    "MapPublicIpOnLaunch" : "False",
+		    "Tags" : [ 	{"Key" : "Name", "Value" : { "Fn::Join" : ["", [{"Ref" : "orgname"}, "MGMT-SUBNET1AZ1" ]]	}},
+		    			{"Key" : "Help", "Value" : "Kindly contact local admin"},
+	        			{"Key" : "Org", "Value" : { "Ref" : "orgname"}}		    			
+		    		],
+		    "VpcId" : { "Ref" : "VPCMGMT" }
+		  }
+		},
+		"VPCMGMTSUBNET1AZ2"	: {
+		  "Type" : "AWS::EC2::Subnet",
+		  "Properties" : {
+		    "AvailabilityZone" : { "Ref" : "az2"},
+		    "CidrBlock" : { "Ref" : "vpcmgmtsubnet1az2cidr"},
+		    "MapPublicIpOnLaunch" : "False",
+		    "Tags" : [ 	{"Key" : "Name", "Value" : { "Fn::Join" : ["", [{"Ref" : "orgname"}, "MGMT-SUBNET1AZ2" ]]	}},
+		    			{"Key" : "Help", "Value" : "Kindly contact local admin"},
+	        			{"Key" : "Org", "Value" : { "Ref" : "orgname"}}		    			
+		    		],
+		    "VpcId" : { "Ref" : "VPCMGMT" }
+		  }
+		},
+		"VPCMGMTSUBNET2AZ1"	: {
+		  "Type" : "AWS::EC2::Subnet",
+		  "Properties" : {
+		    "AvailabilityZone" : { "Ref" : "az1"},
+		    "CidrBlock" : { "Ref" : "vpcmgmtsubnet2az1cidr"},
+		    "MapPublicIpOnLaunch" : "False",
+		    "Tags" : [ 	{"Key" : "Name", "Value" : { "Fn::Join" : ["", [{"Ref" : "orgname"}, "MGMT-SUBNET2AZ1" ]]	}},
+		    			{"Key" : "Help", "Value" : "Kindly contact local admin"},
+	        			{"Key" : "Org", "Value" : { "Ref" : "orgname"}}		    			
+		    		],
+		    "VpcId" : { "Ref" : "VPCMGMT" }
+		  }
+		},
+		"VPCMGMTSUBNET2AZ2"	: {
+		  "Type" : "AWS::EC2::Subnet",
+		  "Properties" : {
+		    "AvailabilityZone" : { "Ref" : "az2"},
+		    "CidrBlock" : { "Ref" : "vpcmgmtsubnet2az2cidr"},
+		    "MapPublicIpOnLaunch" : "False",
+		    "Tags" : [ 	{"Key" : "Name", "Value" : { "Fn::Join" : ["", [{"Ref" : "orgname"}, "MGMT-SUBNET2AZ2" ]]	}},
+		    			{"Key" : "Help", "Value" : "Kindly contact local admin"},
+	        			{"Key" : "Org", "Value" : { "Ref" : "orgname"}}		    			
+		    		],
+		    "VpcId" : { "Ref" : "VPCMGMT" }
+		  }
+		},
+		"VPCMGMTSUBNET3AZ1"	: {
+		  "Type" : "AWS::EC2::Subnet",
+		  "Properties" : {
+		    "AvailabilityZone" : { "Ref" : "az1"},
+		    "CidrBlock" : { "Ref" : "vpcmgmtsubnet3az1cidr"},
+		    "MapPublicIpOnLaunch" : "False",
+		    "Tags" : [ 	{"Key" : "Name", "Value" : { "Fn::Join" : ["", [{"Ref" : "orgname"}, "MGMT-SUBNET3AZ1" ]]	}},
+		    			{"Key" : "Help", "Value" : "Kindly contact local admin"},
+	        			{"Key" : "Org", "Value" : { "Ref" : "orgname"}}		    			
+		    		],
+		    "VpcId" : { "Ref" : "VPCMGMT" }
+		  }
+		},
+		"VPCMGMTSUBNET3AZ2"	: {
+		  "Type" : "AWS::EC2::Subnet",
+		  "Properties" : {
+		    "AvailabilityZone" : { "Ref" : "az2"},
+		    "CidrBlock" : { "Ref" : "vpcmgmtsubnet3az2cidr"},
+		    "MapPublicIpOnLaunch" : "False",
+		    "Tags" : [ 	{"Key" : "Name", "Value" : { "Fn::Join" : ["", [{"Ref" : "orgname"}, "MGMT-SUBNET3AZ2" ]]	}},
+		    			{"Key" : "Help", "Value" : "Kindly contact local admin"},
+	        			{"Key" : "Org", "Value" : { "Ref" : "orgname"}}		    			
+		    		],
+		    "VpcId" : { "Ref" : "VPCMGMT" }
+		  }
+		},
+		"VPCMGMTSUBNET4AZ1"	: {
+		  "Type" : "AWS::EC2::Subnet",
+		  "Properties" : {
+		    "AvailabilityZone" : { "Ref" : "az1"},
+		    "CidrBlock" : { "Ref" : "vpcmgmtsubnet4az1cidr"},
+		    "MapPublicIpOnLaunch" : "False",
+		    "Tags" : [ 	{"Key" : "Name", "Value" : { "Fn::Join" : ["", [{"Ref" : "orgname"}, "MGMT-SUBNET4AZ1" ]]	}},
+		    			{"Key" : "Help", "Value" : "Kindly contact local admin"},
+	        			{"Key" : "Org", "Value" : { "Ref" : "orgname"}}		    			
+		    		],
+		    "VpcId" : { "Ref" : "VPCMGMT" }
+		  }
+		},
+		"VPCMGMTSUBNET4AZ2"	: {
+		  "Type" : "AWS::EC2::Subnet",
+		  "Properties" : {
+		    "AvailabilityZone" : { "Ref" : "az2"},
+		    "CidrBlock" : { "Ref" : "vpcmgmtsubnet4az2cidr"},
+		    "MapPublicIpOnLaunch" : "False",
+		    "Tags" : [ 	{"Key" : "Name", "Value" : { "Fn::Join" : ["", [{"Ref" : "orgname"}, "MGMT-SUBNET4AZ2" ]]	}},
+		    			{"Key" : "Help", "Value" : "Kindly contact local admin"},
+	        			{"Key" : "Org", "Value" : { "Ref" : "orgname"}}		    			
+		    		],
+		    "VpcId" : { "Ref" : "VPCMGMT" }
+		  }
+		},
+		"VPCMGMTSUBNET5AZ1"	: {
+		  "Type" : "AWS::EC2::Subnet",
+		  "Properties" : {
+		    "AvailabilityZone" : { "Ref" : "az1"},
+		    "CidrBlock" : { "Ref" : "vpcmgmtsubnet5az1cidr"},
+		    "MapPublicIpOnLaunch" : "False",
+		    "Tags" : [ 	{"Key" : "Name", "Value" : { "Fn::Join" : ["", [{"Ref" : "orgname"}, "MGMT-SUBNET5AZ1" ]]	}},
+		    			{"Key" : "Help", "Value" : "Kindly contact local admin"},
+	        			{"Key" : "Org", "Value" : { "Ref" : "orgname"}}		    			
+		    		],
+		    "VpcId" : { "Ref" : "VPCMGMT" }
+		  }
+		},
+		"VPCMGMTSUBNET5AZ2"	: {
+		  "Type" : "AWS::EC2::Subnet",
+		  "Properties" : {
+		    "AvailabilityZone" : { "Ref" : "az2"},
+		    "CidrBlock" : { "Ref" : "vpcmgmtsubnet5az2cidr"},
+		    "MapPublicIpOnLaunch" : "False",
+		    "Tags" : [ 	{"Key" : "Name", "Value" : { "Fn::Join" : ["", [{"Ref" : "orgname"}, "MGMT-SUBNET5AZ2" ]]	}},
+		    			{"Key" : "Help", "Value" : "Kindly contact local admin"},
+	        			{"Key" : "Org", "Value" : { "Ref" : "orgname"}}		    			
+		    		],
+		    "VpcId" : { "Ref" : "VPCMGMT" }
+		  }
+		},
+
+
+
+
+
+
+      	"VPCMGMTIG" : {
+         "Type" : "AWS::EC2::InternetGateway",
+         "Properties" : {
+            "Tags" : [ {"Key" : "Name", "Value" : { "Fn::Join" : ["", [{"Ref" : "orgname"}, "MGMT-IG" ]]	}}
+            	]
+         	}
+      	},
+		"VPCMGMTIGATTACH" : {
+		   "Type" : "AWS::EC2::VPCGatewayAttachment",
+		   "Properties" : {
+		      "VpcId" : { "Ref" : "VPCMGMT" },
+		      "InternetGatewayId" : { "Ref" : "VPCMGMTIG" }
+		   }
+		},	
+
+
+      	"VPCMGMTVG" : {
+         "Type" : "AWS::EC2::VPNGateway",
+         "Properties" : {
+            "Type" : "ipsec.1",
+            "Tags" : [ {"Key" : "Name", "Value" : { "Fn::Join" : ["", [{"Ref" : "orgname"}, "MGMT-VG" ]]	}}
+            	]
+         }
+      	},
+		"VPCMGMTVGATTACH" : {
+		   "Type" : "AWS::EC2::VPCGatewayAttachment",
+		   "Properties" : {
+		      "VpcId" : { "Ref" : "VPCMGMT" },
+		      "VpnGatewayId" : { "Ref" : "VPCMGMTVG" }
+		   }
+		},
+
+
+		"VPCMGMTSUBNET2AZ1NAT" : {
+		  "DependsOn" : "VPCMGMTIGATTACH",
+		  "Type" : "AWS::EC2::NatGateway",
+		  "Properties" : {
+		    "AllocationId" : { "Fn::GetAtt" : ["VPCMGMTSUBNET2AZ1EIP", "AllocationId"]},
+		    "SubnetId" : { "Ref" : "VPCMGMTSUBNET3AZ1"}
+		  	}
+		},
+		"VPCMGMTSUBNET2AZ1EIP" : {
+		  "Type" : "AWS::EC2::EIP",
+		  "Properties" : {
+		    "Domain" : "vpc"
+			  }
+		},		
+		"VPCMGMTSUBNET2AZ2NAT" : {
+		  "DependsOn" : "VPCMGMTIGATTACH",
+		  "Type" : "AWS::EC2::NatGateway",
+		  "Properties" : {
+		    "AllocationId" : { "Fn::GetAtt" : ["VPCMGMTSUBNET2AZ2EIP", "AllocationId"]},
+		    "SubnetId" : { "Ref" : "VPCMGMTSUBNET3AZ2"}
+		  	}
+		},
+		"VPCMGMTSUBNET2AZ2EIP" : {
+		  "Type" : "AWS::EC2::EIP",
+		  "Properties" : {
+		    "Domain" : "vpc"
+			  }
+		},	
+
+
+
+      	"VPCMGMTSUBNET1AZ1AZ2ROUTETABLE" : {
+         "Type" : "AWS::EC2::RouteTable",
+         "Properties" : {
+            "VpcId" : { "Ref" : "VPCMGMT" },
+            "Tags" : [ 	{"Key" : "Name", "Value" : { "Fn::Join" : ["", [{"Ref" : "orgname"}, "MGMT-SUBNET1AZ1AZ2-ROUTETABLE" ]]	}},
+            			{"Key" : "Default Routing", "Value" : "VG"} 
+            ]
+          }
+      	},
+      	"VPCMGMTSUBNET1AZ1AZ2ROUTETABLEROUTES" : {
+         "Type" : "AWS::EC2::Route",
+         "DependsOn" : "VPCMGMTVGATTACH",         
+         "Properties" : {
+            "RouteTableId" : { "Ref" : "VPCMGMTSUBNET1AZ1AZ2ROUTETABLE" },
+            "DestinationCidrBlock" : "0.0.0.0/0",
+            "GatewayId" : { "Ref" : "VPCMGMTVG" }
+        	}
+      	},
+      	"VPCMGMTSUBNET1AZ1AZ2ROUTETABLEASSOCIATIONAZ1" : {
+         "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+         "Properties" : {
+            "SubnetId" : { "Ref" : "VPCMGMTSUBNET1AZ1" },
+            "RouteTableId" : { "Ref" : "VPCMGMTSUBNET1AZ1AZ2ROUTETABLE" }
+         	}
+      	},
+      	"VPCMGMTSUBNET1AZ1AZ2ROUTETABLEASSOCIATIONAZ2" : {
+         "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+         "Properties" : {
+            "SubnetId" : { "Ref" : "VPCMGMTSUBNET1AZ2" },
+            "RouteTableId" : { "Ref" : "VPCMGMTSUBNET1AZ1AZ2ROUTETABLE" }
+         	}
+      	},
+
+
+      	"VPCMGMTSUBNET2AZ1ROUTETABLE" : {
+         "Type" : "AWS::EC2::RouteTable",
+         "Properties" : {
+            "VpcId" : { "Ref" : "VPCMGMT" },
+            "Tags" : [ 	{"Key" : "Name", "Value" : { "Fn::Join" : ["", [{"Ref" : "orgname"}, "MGMT-SUBNET2AZ1-ROUTETABLE" ]]	}},
+            			{"Key" : "Default Routing", "Value" : "VG"} 
+            ]
+          }
+      	},
+      	"VPCMGMTSUBNET2AZ2ROUTETABLE" : {
+         "Type" : "AWS::EC2::RouteTable",
+         "Properties" : {
+            "VpcId" : { "Ref" : "VPCMGMT" },
+            "Tags" : [ 	{"Key" : "Name", "Value" : { "Fn::Join" : ["", [{"Ref" : "orgname"}, "MGMT-SUBNET2AZ2-ROUTETABLE" ]]	}},
+            			{"Key" : "Default Routing", "Value" : "VG"} 
+            ]
+          }
+      	},      	
+      	"VPCMGMTSUBNET2AZ1ROUTETABLEROUTES" : {
+         "Type" : "AWS::EC2::Route",
+         "DependsOn" : "VPCMGMTSUBNET2AZ1NAT",         
+         "Properties" : {
+            "RouteTableId" : { "Ref" : "VPCMGMTSUBNET2AZ1ROUTETABLE" },
+            "DestinationCidrBlock" : "0.0.0.0/0",
+            "NatGatewayId" : { "Ref" : "VPCMGMTSUBNET2AZ1NAT" }
+        	}
+      	},
+      	"VPCMGMTSUBNET2AZ2ROUTETABLEROUTES" : {
+         "Type" : "AWS::EC2::Route",
+         "DependsOn" : "VPCMGMTSUBNET2AZ2NAT",         
+         "Properties" : {
+            "RouteTableId" : { "Ref" : "VPCMGMTSUBNET2AZ2ROUTETABLE" },
+            "DestinationCidrBlock" : "0.0.0.0/0",
+            "NatGatewayId" : { "Ref" : "VPCMGMTSUBNET2AZ2NAT" }
+        	}
+      	},      	
+      	"VPCMGMTSUBNET2AZ1ROUTETABLEASSOCIATIONAZ1" : {
+         "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+         "Properties" : {
+            "SubnetId" : { "Ref" : "VPCMGMTSUBNET2AZ1" },
+            "RouteTableId" : { "Ref" : "VPCMGMTSUBNET2AZ1ROUTETABLE" }
+         	}
+      	},
+      	"VPCMGMTSUBNET2AZ2ROUTETABLEASSOCIATIONAZ2" : {
+         "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+         "Properties" : {
+            "SubnetId" : { "Ref" : "VPCMGMTSUBNET2AZ2" },
+            "RouteTableId" : { "Ref" : "VPCMGMTSUBNET2AZ2ROUTETABLE" }
+         	}
+      	},
+
+
+      	"VPCMGMTSUBNET3AZ1AZ2ROUTETABLE" : {
+         "Type" : "AWS::EC2::RouteTable",
+         "Properties" : {
+            "VpcId" : { "Ref" : "VPCMGMT" },
+            "Tags" : [ 	{"Key" : "Name", "Value" : { "Fn::Join" : ["", [{"Ref" : "orgname"}, "MGMT-SUBNET3AZ1AZ2-ROUTETABLE" ]]	}},
+            			{"Key" : "Default Routing", "Value" : "IG"} 
+            ]
+          }
+      	},
+      	"VPCMGMTSUBNET3AZ1AZ2ROUTETABLEROUTES" : {
+         "Type" : "AWS::EC2::Route",
+         "DependsOn" : "VPCMGMTIG",
+         "Properties" : {
+            "RouteTableId" : { "Ref" : "VPCMGMTSUBNET3AZ1AZ2ROUTETABLE" },
+            "DestinationCidrBlock" : "0.0.0.0/0",
+            "GatewayId" : { "Ref" : "VPCMGMTIG" }
+        	}
+      	},
+      	"VPCMGMTSUBNET3AZ1AZ2ROUTETABLEASSOCIATIONAZ1" : {
+         "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+         "Properties" : {
+            "SubnetId" : { "Ref" : "VPCMGMTSUBNET3AZ1" },
+            "RouteTableId" : { "Ref" : "VPCMGMTSUBNET3AZ1AZ2ROUTETABLE" }
+         	}
+      	},
+      	"VPCMGMTSUBNET3AZ1AZ2ROUTETABLEASSOCIATIONAZ2" : {
+         "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+         "Properties" : {
+            "SubnetId" : { "Ref" : "VPCMGMTSUBNET3AZ2" },
+            "RouteTableId" : { "Ref" : "VPCMGMTSUBNET3AZ1AZ2ROUTETABLE" }
+         	}
+      	},
+
+      	"VPCMGMTSUBNET4AZ1AZ2ROUTETABLE" : {
+         "Type" : "AWS::EC2::RouteTable",
+         "Properties" : {
+            "VpcId" : { "Ref" : "VPCMGMT" },
+            "Tags" : [ 	{"Key" : "Name", "Value" : { "Fn::Join" : ["", [{"Ref" : "orgname"}, "MGMT-SUBNET4AZ1AZ2-ROUTETABLE" ]]	}},
+            			{"Key" : "Default Routing", "Value" : "VG"} 
+            ]
+          }
+      	},
+      	"VPCMGMTSUBNET4AZ1AZ2ROUTETABLEROUTES" : {
+         "Type" : "AWS::EC2::Route",
+         "DependsOn" : "VPCMGMTVGATTACH",         
+         "Properties" : {
+            "RouteTableId" : { "Ref" : "VPCMGMTSUBNET4AZ1AZ2ROUTETABLE" },
+            "DestinationCidrBlock" : "0.0.0.0/0",
+            "GatewayId" : { "Ref" : "VPCMGMTVG" }
+        	}
+      	},
+      	"VPCMGMTSUBNET4AZ1AZ2ROUTETABLEASSOCIATIONAZ1" : {
+         "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+         "Properties" : {
+            "SubnetId" : { "Ref" : "VPCMGMTSUBNET4AZ1" },
+            "RouteTableId" : { "Ref" : "VPCMGMTSUBNET4AZ1AZ2ROUTETABLE" }
+         	}
+      	},
+      	"VPCMGMTSUBNET4AZ1AZ2ROUTETABLEASSOCIATIONAZ2" : {
+         "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+         "Properties" : {
+            "SubnetId" : { "Ref" : "VPCMGMTSUBNET4AZ2" },
+            "RouteTableId" : { "Ref" : "VPCMGMTSUBNET4AZ1AZ2ROUTETABLE" }
+         	}
+      	},
+      	"VPCMGMTSUBNET5AZ1AZ2ROUTETABLE" : {
+         "Type" : "AWS::EC2::RouteTable",
+         "Properties" : {
+            "VpcId" : { "Ref" : "VPCMGMT" },
+            "Tags" : [ 	{"Key" : "Name", "Value" : { "Fn::Join" : ["", [{"Ref" : "orgname"}, "MGMT-SUBNET5AZ1AZ2-ROUTETABLE" ]]	}},
+            			{"Key" : "Default Routing", "Value" : "VG"} 
+            ]
+          }
+      	},
+      	"VPCMGMTSUBNET5AZ1AZ2ROUTETABLEROUTES" : {
+         "Type" : "AWS::EC2::Route",
+         "DependsOn" : "VPCMGMTVGATTACH",         
+         "Properties" : {
+            "RouteTableId" : { "Ref" : "VPCMGMTSUBNET5AZ1AZ2ROUTETABLE" },
+            "DestinationCidrBlock" : "0.0.0.0/0",
+            "GatewayId" : { "Ref" : "VPCMGMTVG" }
+        	}
+      	},
+      	"VPCMGMTSUBNET5AZ1AZ2ROUTETABLEASSOCIATIONAZ1" : {
+         "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+         "Properties" : {
+            "SubnetId" : { "Ref" : "VPCMGMTSUBNET5AZ1" },
+            "RouteTableId" : { "Ref" : "VPCMGMTSUBNET5AZ1AZ2ROUTETABLE" }
+         	}
+      	},
+      	"VPCMGMTSUBNET5AZ1AZ2ROUTETABLEASSOCIATIONAZ2" : {
+         "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+         "Properties" : {
+            "SubnetId" : { "Ref" : "VPCMGMTSUBNET5AZ2" },
+            "RouteTableId" : { "Ref" : "VPCMGMTSUBNET5AZ1AZ2ROUTETABLE" }
+         	}
+      	}      	      	     	
+   		
+
+
+
+
+
+
+
+
+	}    
+
+}
